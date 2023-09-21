@@ -54,11 +54,11 @@ async def on_ready():
     console_channel = await bot.fetch_channel(CONSOLE_CHANNEL)
     print(console_channel)
     message = """**Initializing the following commands: <a:loading:1153202857969983488> **
- ✔️ `!search <page>` - Accepted parameter(s): `<page>` **(Non-Negative Integer)**
- ✔️ `!join` - Accepted parameter(s): `None`
- ✔️ `!play <id>` - Accepted parameter(s): `<id>` **(ID CAN BE RETURNED BY !SEARCH / Non-Negative Integer)**
- ✔️ `!stop` - Accepted parameter(s): `None`
- ✔️ `!disconnect` - Accepted parameter(s): `None` """
+ ✔️ `!search <page>` - Accepted argument(s): `<page>` **(Non-Negative Integer)**
+ ✔️ `!join` - Accepted argument(s): `None`
+ ✔️ `!play <id>` - Accepted argument(s): `<id>` **(ID CAN BE RETURNED BY !SEARCH / Non-Negative Integer)**
+ ✔️ `!stop` - Accepted argument(s): `None`
+ ✔️ `!disconnect` - Accepted argument(s): `None` """
     if console_channel:
         await(console_channel.send(message))
         await console_channel.send(f'`Client initialized. Loaded {len(mainlist)} songs.`')
@@ -76,7 +76,7 @@ async def search(ctx, page):
             message = message + f"`{i + 1}` - {mainlist[i][0]} `by {mainlist[i][2]}` \n"
     embed = discord.Embed(title=f"**Displaying songs {start} to {end}!**", description = message, color=discord.Color.from_rgb(255,187,187), timestamp=datetime.datetime.utcnow())
     embed.set_author(name=f"Page: {page}")
-    embed.set_footer(text=f"**To play a song, use **`!play <id>`")
+    embed.set_footer(text=f"To play a song, use `!play <id>`")
     await ctx.send(embed=embed)
 
 @bot.command()
@@ -92,10 +92,10 @@ async def join(ctx):
 
 @bot.command()
 async def play(ctx, id):
-    ctx.voice_client.stop()
-    if ctx.voice_client == None:
-        return None 
     # Check if the bot is already in a voice channel
+    if ctx.voice_client == None:
+        await ctx.send("I'm not a voice channel yet. Use `!join` to add me in a voice channel!")
+        return None 
     if ctx.voice_client.is_playing():
         ctx.voice_client.stop()
     # Load and play the local MP3 file
@@ -143,4 +143,14 @@ async def get_last_log(ctx):
     last_log = log_buffer.getvalue()
     await ctx.send(f'```python\n{last_log}\n```')
 
+@bot.command()
+async def info(ctx):
+    message = """**These are the available commands:**
+  ✦ `!search <page>` - Accepted argument(s): `<page>` **(Non-Negative Integer)**
+  ✦ `!join` - Accepted argument(s): `None`
+  ✦ `!play <id>` - Accepted argument(s): `<id>` **(ID CAN BE RETURNED BY !SEARCH / Non-Negative Integer)**
+  ✦ `!stop` - Accepted argument(s): `None`
+  ✦ `!disconnect` - Accepted argument(s): `None` """
+    await ctx.send(message)
+    
 bot.run(TOKEN)
